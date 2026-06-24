@@ -11,7 +11,6 @@ pub struct ProcessMetrics{
 
 pub fn collect_process_metrics(sys: &mut System, pid: Pid) -> ProcessMetrics {
     
-    
     sys.refresh_processes_specifics(ProcessesToUpdate::Some(&[pid]), false,
                                     ProcessRefreshKind::everything().without_tasks());
     
@@ -19,10 +18,9 @@ pub fn collect_process_metrics(sys: &mut System, pid: Pid) -> ProcessMetrics {
     
     let name = process.name().to_string_lossy().into_owned(); 
     let used_memory = process.memory();
-    let cpu_usage = process.cpu_usage();
+    let cpu_usage = process.cpu_usage() / sys.cpus().len() as f32;
     let run_time = process.run_time();
 
-
-
+    
     ProcessMetrics { name, used_memory, cpu_usage, run_time }
 }

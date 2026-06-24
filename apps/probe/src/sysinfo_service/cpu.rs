@@ -30,7 +30,6 @@ fn get_cores_usage(sys: &mut System) -> Box<[f32]> {
     
     for cpu in sys.cpus() {
         cpus.push(cpu.cpu_usage());
-        // print!("{}% ", cpu.cpu_usage());
     }
     
     cpus.into_boxed_slice()
