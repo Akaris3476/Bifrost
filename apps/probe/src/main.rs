@@ -6,12 +6,7 @@ use sysinfo_service::SysInfoService;
 
 fn main() {
     
-    // println!("=> system:");
-    // // RAM and swap information:
-    // println!("total memory: {} bytes", sys.total_memory());
-    // println!("used memory : {} bytes", sys.used_memory());
-    // println!("total swap  : {} bytes", sys.total_swap());
-    // println!("used swap   : {} bytes", sys.used_swap());
+
     // 
     // // Display system information:
     // println!("System name:             {:?}", System::name());
@@ -50,20 +45,17 @@ fn main() {
     // for component in &components {
     //     println!("{component:?}");
     // }
-    // 
-    // println!("=> Bifrost usage:");
-    // let bifrost_pid = get_current_pid().unwrap();
-    // println!("=> bifrost pid: {:?}", bifrost_pid);
-    // let this_process = sys.process(bifrost_pid).unwrap();
-    // println!("=> process: {:?}, {:?}", this_process.name(), this_process.memory()/1024);
+
 
     let mut sysinfo_service = SysInfoService::new();
 
     loop {
-        let cpus_metrics = sysinfo_service.get_cpu_metrics();
+        let metrics = sysinfo_service.get_all_metrics();
         
-        println!("Usage of each cpu core:\n {:#?}\n", cpus_metrics.cpus_usage);
-        println!("Average cpu usage:\n {:.2}%\n", cpus_metrics.avg_usage);
+        println!("Usage of each cpu core:\n {:#?}\n", metrics.cpu.cores_usage);
+        println!("Average cpu usage:\n {:.2}%\n", metrics.cpu.avg_usage);
+        
+        println!("{:#?}", metrics.probe_process);
 
         
         sleep(Duration::from_secs(1));

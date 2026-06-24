@@ -2,27 +2,27 @@ use sysinfo::{System};
 
 
 #[derive(Debug)]
-pub  struct CpuMetrics {
-    pub(crate) cpus_usage: Box<[f32]>,
-    pub(crate) avg_usage: f32,
+pub struct CpuMetrics {
+    pub cores_usage: Box<[f32]>,
+    pub avg_usage: f32,
     
 }
 
-pub  fn retrieve_cpu_metrics(sys: &mut System) -> CpuMetrics {
-    let cpus_usage = get_cpus_usage(sys);
-    let avg_usage = avg_cpus_usage(&cpus_usage);
+pub  fn collect_cpu_metrics(sys: &mut System) -> CpuMetrics {
+    let cores_usage = get_cores_usage(sys);
+    let avg_usage = avg_cpu_usage(&cores_usage);
 
-    CpuMetrics { cpus_usage, avg_usage }
+    CpuMetrics { cores_usage, avg_usage }
 }
 
-fn avg_cpus_usage(cpus_usage: &[f32]) -> f32 {
+fn avg_cpu_usage(cpus_usage: &[f32]) -> f32 {
     let avg_usage = cpus_usage.iter().sum::<f32>();
     let cpu_count = cpus_usage.len();
     
     avg_usage / cpu_count as f32
 }
 
-pub fn get_cpus_usage(sys: &mut System) -> Box<[f32]> {
+fn get_cores_usage(sys: &mut System) -> Box<[f32]> {
     sys.refresh_cpu_usage();
     
     let cpus_count = sys.cpus().len();
