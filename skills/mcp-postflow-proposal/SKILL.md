@@ -24,6 +24,8 @@ For local installs and refreshes, use [`scripts/sync_skills.sh`](../../scripts/s
 the Codex and Claude skill directories and package the `.skill` archive.
 For a mandatory posthook entrypoint, call [`scripts/postflow-hook.sh`](../../scripts/postflow-hook.sh) from your runner
 and let it print the proposal to stdout.
+For a one-shot setup that installs both the skills and the hook bundle, use
+[`scripts/install_skills_and_posthook.sh`](../../scripts/install_skills_and_posthook.sh).
 
 ## When to run
 

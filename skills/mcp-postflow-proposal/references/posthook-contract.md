@@ -22,11 +22,12 @@ Force one final proposal step before the agent is allowed to finish.
 ## Expected behavior
 
 1. The hook calls the skill at the end of the flow.
-2. The skill reads the latest MCP-backed state if available.
+2. The skill reads the latest MCP-backed state if available through the agent's own tools.
 3. The skill emits a proposal in markdown.
 4. The caller surfaces that proposal before finalizing the run.
 
 The repo-local entrypoint for this contract is [`scripts/postflow-hook.sh`](../../../scripts/postflow-hook.sh).
+The one-shot installer is [`scripts/install_skills_and_posthook.sh`](../../../scripts/install_skills_and_posthook.sh).
 
 ## Output contract
 
