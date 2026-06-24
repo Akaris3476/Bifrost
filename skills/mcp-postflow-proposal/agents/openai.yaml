@@ -1,0 +1,8 @@
+interface:
+  display_name: "MCP Post-Flow Proposal"
+  short_description: "Mandatory MCP proposal after each flow"
+  default_prompt: "Use $mcp-postflow-proposal to end this task with a refreshed MCP-backed proposal."
+
+policy:
+  allow_implicit_invocation: true
+

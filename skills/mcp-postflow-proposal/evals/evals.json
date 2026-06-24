@@ -1,0 +1,24 @@
+{
+  "skill_name": "mcp-postflow-proposal",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "You just finished an agentic task that updated the knowledge base docs. Produce the mandatory post-flow proposal for the latest MCP state, and make sure it is clearly marked as a proposal rather than a completed mutation.",
+      "expected_output": "A markdown proposal with current state, proposed update, reason, and action status.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "The task is done and nothing in MCP changed. Still emit the required end-of-flow proposal, but make it explicit that no change is required and that the proposal step still ran.",
+      "expected_output": "A no-change proposal that still includes all required sections.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "A posthook runner is calling this skill from Claude, but the MCP source is unavailable. Return the required proposal and clearly mark the run as blocked by missing MCP access, with the caller source preserved in the context.",
+      "expected_output": "A blocked proposal that names the missing MCP access and remains source-agnostic.",
+      "files": []
+    }
+  ]
+}
+
