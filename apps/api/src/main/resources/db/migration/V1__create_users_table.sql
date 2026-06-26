@@ -27,6 +27,11 @@ CREATE TABLE roles
 
 CREATE UNIQUE INDEX uq_roles_name ON roles (name);
 
+INSERT INTO roles (name, description)
+VALUES ('OWNER', 'Full workspace ownership permissions'),
+       ('ADMIN', 'Workspace administration permissions'),
+       ('MEMBER', 'Standard workspace member permissions');
+
 CREATE TABLE permissions
 (
     id          UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
@@ -55,15 +60,39 @@ CREATE TABLE users
     email         VARCHAR(255) NOT NULL,
     display_name  VARCHAR(100),
     password_hash VARCHAR(255),
-    role_id       UUID         NOT NULL REFERENCES roles (id),
     status        VARCHAR(30)  NOT NULL DEFAULT 'PENDING_VERIFICATION'
         CHECK (status IN ('ACTIVE', 'DISABLED', 'PENDING_VERIFICATION')),
-    package_id    UUID         REFERENCES packages (id) ON DELETE SET NULL,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 CREATE UNIQUE INDEX uq_users_email ON users (email);
-CREATE INDEX idx_users_role_id ON users (role_id);
-CREATE INDEX idx_users_package_id ON users (package_id);
 CREATE INDEX idx_users_status ON users (status);
+
+CREATE TABLE workspaces
+(
+    id                 UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
+    name               VARCHAR(100) NOT NULL,
+    slug               VARCHAR(100),
+    package_id         UUID         NOT NULL REFERENCES packages (id),
+    created_by_user_id UUID         REFERENCES users (id) ON DELETE SET NULL,
+    created_at         TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    updated_at         TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX uq_workspaces_slug ON workspaces (slug) WHERE slug IS NOT NULL;
+CREATE INDEX idx_workspaces_package_id ON workspaces (package_id);
+CREATE INDEX idx_workspaces_created_by_user_id ON workspaces (created_by_user_id);
+
+CREATE TABLE workspace_members
+(
+    workspace_id UUID        NOT NULL REFERENCES workspaces (id) ON DELETE CASCADE,
+    user_id      UUID        NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    role_id      UUID        NOT NULL REFERENCES roles (id),
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (workspace_id, user_id)
+);
+
+CREATE INDEX idx_workspace_members_user_id ON workspace_members (user_id);
+CREATE INDEX idx_workspace_members_role_id ON workspace_members (role_id);

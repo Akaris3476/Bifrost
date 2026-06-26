@@ -1,21 +1,10 @@
 package cdv.bifrost.server.model.entity;
 
-import cdv.bifrost.auth.model.entity.UserEntity;
 import cdv.bifrost.common.model.entity.BaseEntity;
 import cdv.bifrost.server.model.enums.ServerStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import cdv.bifrost.workspace.model.entity.WorkspaceEntity;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 
@@ -29,8 +18,8 @@ import java.time.OffsetDateTime;
 public class ServerEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @JoinColumn(name = "workspace_id", nullable = false)
+    private WorkspaceEntity workspace;
 
     @Column(nullable = false, length = 100)
     private String name;

@@ -3,7 +3,7 @@
 CREATE TABLE servers
 (
     id           UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
-    user_id      UUID         NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    workspace_id UUID NOT NULL REFERENCES workspaces (id) ON DELETE CASCADE,
     name         VARCHAR(100) NOT NULL,
     hostname     VARCHAR(253) NOT NULL,
     port         INTEGER      NOT NULL DEFAULT 22 CHECK (port BETWEEN 1 AND 65535),
@@ -15,7 +15,7 @@ CREATE TABLE servers
     updated_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX uq_servers_user_hostname_port ON servers (user_id, hostname, port);
-CREATE INDEX idx_servers_user_id ON servers (user_id);
+CREATE UNIQUE INDEX uq_servers_workspace_hostname_port ON servers (workspace_id, hostname, port);
+CREATE INDEX idx_servers_workspace_id ON servers (workspace_id);
 CREATE INDEX idx_servers_status ON servers (status);
 CREATE INDEX idx_servers_last_seen ON servers (last_seen_at);
