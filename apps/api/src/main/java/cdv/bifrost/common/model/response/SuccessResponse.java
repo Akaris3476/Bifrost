@@ -5,6 +5,8 @@ import lombok.Getter;
 @Getter
 public class SuccessResponse<T> {
 
+    // TODO: add request id for log debugging
+    
     private final boolean success = true;
     private final T data;
 
