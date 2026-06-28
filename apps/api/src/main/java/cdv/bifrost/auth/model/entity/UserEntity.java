@@ -3,15 +3,15 @@ package cdv.bifrost.auth.model.entity;
 import cdv.bifrost.auth.model.enums.UserStatus;
 import cdv.bifrost.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
 public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 255)

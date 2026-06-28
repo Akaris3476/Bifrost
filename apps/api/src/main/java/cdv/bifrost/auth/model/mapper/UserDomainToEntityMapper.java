@@ -8,9 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserDomainToEntityMapper {
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "displayName")
-    @Mapping(target = "createdUser", ignore = true)
+    @Mapping(target = "displayName", source = "name")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     UserEntity map(User user);

@@ -11,27 +11,32 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 class UserAdapter implements UserReadPort, UserSavePort {
 
     private final UserRepository userRepository;
-    private final UserEntityToDomainMapper userEntityToDomainMapper;
     private final UserDomainToEntityMapper userDomainToEntityMapper;
+    private final UserEntityToDomainMapper userEntityToDomainMapper;
 
     @Override
     public Optional<User> findByEmailIgnoreCase(String email) {
-        Optional<UserEntity> userEntity = this.userRepository.findByEmailIgnoreCase(email);
-        // INFO: this is S.map(xx:map) because there is Optional/Stream/List collection and map for each element
-        return userEntity.map(userEntityToDomainMapper::map);
+        return userRepository.findByEmailIgnoreCase(email)
+                .map(userEntityToDomainMapper::map);
     }
 
     @Override
-    public User save(final User user) {
-        final UserEntity userEntity = userDomainToEntityMapper.map(user);
-        final UserEntity savedUserEntity = this.userRepository.save(userEntity);
-        // INFO: mapper.map because there is only one element
-        return userEntityToDomainMapper.map(savedUserEntity);
+    public Optional<User> findById(String id) {
+        return userRepository.findById(UUID.fromString(id))
+                .map(userEntityToDomainMapper::map);
+    }
+
+    @Override
+    public User save(User user) {
+        UserEntity entity = userDomainToEntityMapper.map(user);
+        UserEntity saved = userRepository.save(entity);
+        return userEntityToDomainMapper.map(saved);
     }
 }

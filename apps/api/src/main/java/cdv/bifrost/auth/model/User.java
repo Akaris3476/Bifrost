@@ -13,7 +13,9 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class User extends BaseDomainModel {
     private String id;
+    private String email;
     private String name;
+    private String passwordHash;
     private UserStatus status;
 
 //    private List<Workspace> workspaceList;

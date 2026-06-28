@@ -10,3 +10,11 @@ spring:
           time_zone: UTC
   flyway:
     locations: classpath:db/migration
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax

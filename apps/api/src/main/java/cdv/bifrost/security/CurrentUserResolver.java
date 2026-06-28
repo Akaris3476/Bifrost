@@ -5,9 +5,10 @@ import cdv.bifrost.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -20,29 +21,19 @@ public class CurrentUserResolver {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required");
         }
 
-        String email = resolveEmail(authentication);
-        return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user does not exist"));
-    }
-
-    private String resolveEmail(Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        if (principal instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("email");
-            if (email != null && !email.isBlank()) {
-                return email;
-            }
-
-            String preferredUsername = jwt.getClaimAsString("preferred_username");
-            if (preferredUsername != null && !preferredUsername.isBlank()) {
-                return preferredUsername;
-            }
+        if (!(principal instanceof AuthUserPrincipal authPrincipal)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unsupported principal");
         }
 
-        String name = authentication.getName();
-        if (name == null || name.isBlank() || "anonymousUser".equals(name)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user email is missing");
+        UUID userId;
+        try {
+            userId = UUID.fromString(authPrincipal.userId());
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid user id");
         }
-        return name;
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user does not exist"));
     }
 }
