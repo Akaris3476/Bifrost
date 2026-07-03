@@ -49,7 +49,7 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
                 AuthUserPrincipal principal = new AuthUserPrincipal(
                         user.getId(),
                         user.getEmail(),
-                        session.getSessionHash()
+                        rawSessionId
                 );
                 SecurityContext ctx = SecurityContextHolder.createEmptyContext();
                 ctx.setAuthentication(new SessionAuthenticationToken(

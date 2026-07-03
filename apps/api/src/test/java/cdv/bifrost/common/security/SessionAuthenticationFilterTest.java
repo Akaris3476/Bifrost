@@ -71,7 +71,7 @@ class SessionAuthenticationFilterTest {
         AuthUserPrincipal principal = (AuthUserPrincipal) auth.getPrincipal();
         assertThat(principal.userId()).isEqualTo("user-id-1");
         assertThat(principal.email()).isEqualTo("u@b.c");
-        assertThat(principal.sessionHash()).isEqualTo("h");
+        assertThat(principal.sessionHash()).isEqualTo("raw-id");
         assertThat(auth.getAuthorities()).extracting(Object::toString).contains("ROLE_USER");
     }
 
@@ -131,7 +131,7 @@ class SessionAuthenticationFilterTest {
         SecurityContextHolder.setContext(new SecurityContextImpl());
         SecurityContextHolder.getContext().setAuthentication(
                 new SessionAuthenticationToken(
-                        new AuthUserPrincipal("old", "old@x", "old-h"),
+                        new AuthUserPrincipal("old", "old@x", "old-raw"),
                         null,
                         java.util.List.of()
                 )
