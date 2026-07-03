@@ -7,7 +7,7 @@ import cdv.bifrost.auth.model.request.RegisterRequest;
 import cdv.bifrost.auth.model.response.AuthUserResponse;
 import cdv.bifrost.auth.service.AuthService;
 import cdv.bifrost.common.model.response.SuccessResponse;
-import cdv.bifrost.security.AuthUserPrincipal;
+import cdv.bifrost.common.security.Identity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 class AuthController {
 
     private final AuthService authService;
+    private final Identity identity;
 
     @PostMapping("/register")
     public SuccessResponse<Void> register(@RequestBody @Valid RegisterRequest request) {
@@ -59,9 +59,8 @@ class AuthController {
     }
 
     @GetMapping("/me")
-    public SuccessResponse<AuthUserResponse> me(Authentication authentication) {
-        AuthUserPrincipal principal = (AuthUserPrincipal) authentication.getPrincipal();
-        User user = authService.me(principal.sessionHash());
+    public SuccessResponse<AuthUserResponse> me() {
+        User user = authService.me(identity.getSessionHash());
         return SuccessResponse.of(AuthUserResponse.builder()
                 .id(java.util.UUID.fromString(user.getId()))
                 .email(user.getEmail())

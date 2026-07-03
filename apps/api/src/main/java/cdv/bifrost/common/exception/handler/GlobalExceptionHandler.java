@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
+// TODO: update ExceptionHandler exception interfaces to make it globally available instead of exception type
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

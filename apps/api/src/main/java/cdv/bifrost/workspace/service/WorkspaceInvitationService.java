@@ -4,6 +4,7 @@ import cdv.bifrost.auth.model.entity.UserEntity;
 import cdv.bifrost.auth.repository.UserRepository;
 import cdv.bifrost.authorization.model.entity.RoleEntity;
 import cdv.bifrost.authorization.repository.RoleRepository;
+import cdv.bifrost.common.security.Identity;
 import cdv.bifrost.workspace.model.entity.WorkspaceEntity;
 import cdv.bifrost.workspace.model.entity.WorkspaceInvitationEntity;
 import cdv.bifrost.workspace.model.entity.WorkspaceMemberEntity;
@@ -18,6 +19,7 @@ import cdv.bifrost.workspace.repository.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,10 +54,13 @@ public class WorkspaceInvitationService {
     public WorkspaceInvitationResponse createInvitation(
             UUID workspaceId,
             CreateWorkspaceInvitationRequest request,
-            UserEntity currentUser
+            Identity identity
     ) {
+        UUID currentUserId = currentUserId(identity);
+        UserEntity currentUser = getCurrentUser(currentUserId);
+
         WorkspaceEntity workspace = getWorkspace(workspaceId);
-        requireWorkspaceManager(workspaceId, currentUser);
+        requireWorkspaceManager(workspaceId, currentUserId);
 
         String normalizedEmail = normalizeEmail(request.email());
         RoleEntity invitedRole = getInvitableRole(request.roleName());
@@ -93,8 +98,8 @@ public class WorkspaceInvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkspaceInvitationResponse> listInvitations(UUID workspaceId, UserEntity currentUser) {
-        requireWorkspaceManager(workspaceId, currentUser);
+    public List<WorkspaceInvitationResponse> listInvitations(UUID workspaceId, Identity identity) {
+        requireWorkspaceManager(workspaceId, currentUserId(identity));
 
         return workspaceInvitationRepository.findByWorkspace_IdOrderByCreatedAtDesc(workspaceId)
                 .stream()
@@ -103,8 +108,8 @@ public class WorkspaceInvitationService {
     }
 
     @Transactional
-    public void revokeInvitation(UUID workspaceId, UUID invitationId, UserEntity currentUser) {
-        requireWorkspaceManager(workspaceId, currentUser);
+    public void revokeInvitation(UUID workspaceId, UUID invitationId, Identity identity) {
+        requireWorkspaceManager(workspaceId, currentUserId(identity));
 
         WorkspaceInvitationEntity invitation = workspaceInvitationRepository.findById(invitationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found"));
@@ -119,7 +124,9 @@ public class WorkspaceInvitationService {
     }
 
     @Transactional
-    public WorkspaceMemberResponse acceptInvitation(String token, UserEntity currentUser) {
+    public WorkspaceMemberResponse acceptInvitation(String token, Identity identity) {
+        UserEntity currentUser = getCurrentUser(currentUserId(identity));
+
         WorkspaceInvitationEntity invitation = workspaceInvitationRepository.findByTokenHash(hashToken(token))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation not found"));
 
@@ -162,8 +169,17 @@ public class WorkspaceInvitationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workspace not found"));
     }
 
-    private void requireWorkspaceManager(UUID workspaceId, UserEntity currentUser) {
-        WorkspaceMemberEntity member = workspaceMemberRepository.findByWorkspace_IdAndUser_Id(workspaceId, currentUser.getId())
+    private static UUID currentUserId(Identity identity) {
+        return UUID.fromString(identity.getId());
+    }
+
+    private UserEntity getCurrentUser(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AccessDeniedException("User not found"));
+    }
+
+    private void requireWorkspaceManager(UUID workspaceId, UUID userId) {
+        WorkspaceMemberEntity member = workspaceMemberRepository.findByWorkspace_IdAndUser_Id(workspaceId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Workspace membership is required"));
 
         String roleName = member.getRole().getName();

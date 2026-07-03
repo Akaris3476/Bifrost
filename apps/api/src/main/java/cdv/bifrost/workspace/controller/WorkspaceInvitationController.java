@@ -1,8 +1,7 @@
 package cdv.bifrost.workspace.controller;
 
-import cdv.bifrost.auth.model.entity.UserEntity;
 import cdv.bifrost.common.model.response.SuccessResponse;
-import cdv.bifrost.security.CurrentUserResolver;
+import cdv.bifrost.common.security.Identity;
 import cdv.bifrost.workspace.model.request.AcceptWorkspaceInvitationRequest;
 import cdv.bifrost.workspace.model.request.CreateWorkspaceInvitationRequest;
 import cdv.bifrost.workspace.model.response.WorkspaceInvitationResponse;
@@ -10,7 +9,6 @@ import cdv.bifrost.workspace.model.response.WorkspaceMemberResponse;
 import cdv.bifrost.workspace.service.WorkspaceInvitationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,44 +20,36 @@ import java.util.UUID;
 public class WorkspaceInvitationController {
 
     private final WorkspaceInvitationService workspaceInvitationService;
-    private final CurrentUserResolver currentUserResolver;
+    private final Identity identity;
 
     @PostMapping("/workspaces/{workspaceId}/invitations")
     public SuccessResponse<WorkspaceInvitationResponse> createInvitation(
             @PathVariable UUID workspaceId,
-            @Valid @RequestBody CreateWorkspaceInvitationRequest request,
-            Authentication authentication
+            @Valid @RequestBody CreateWorkspaceInvitationRequest request
     ) {
-        UserEntity currentUser = currentUserResolver.resolve(authentication);
-        return SuccessResponse.of(workspaceInvitationService.createInvitation(workspaceId, request, currentUser));
+        return SuccessResponse.of(workspaceInvitationService.createInvitation(workspaceId, request, identity));
     }
 
     @GetMapping("/workspaces/{workspaceId}/invitations")
     public SuccessResponse<List<WorkspaceInvitationResponse>> listInvitations(
-            @PathVariable UUID workspaceId,
-            Authentication authentication
+            @PathVariable UUID workspaceId
     ) {
-        UserEntity currentUser = currentUserResolver.resolve(authentication);
-        return SuccessResponse.of(workspaceInvitationService.listInvitations(workspaceId, currentUser));
+        return SuccessResponse.of(workspaceInvitationService.listInvitations(workspaceId, identity));
     }
 
     @DeleteMapping("/workspaces/{workspaceId}/invitations/{invitationId}")
     public SuccessResponse<Void> revokeInvitation(
             @PathVariable UUID workspaceId,
-            @PathVariable UUID invitationId,
-            Authentication authentication
+            @PathVariable UUID invitationId
     ) {
-        UserEntity currentUser = currentUserResolver.resolve(authentication);
-        workspaceInvitationService.revokeInvitation(workspaceId, invitationId, currentUser);
+        workspaceInvitationService.revokeInvitation(workspaceId, invitationId, identity);
         return SuccessResponse.ok();
     }
 
     @PostMapping("/workspace-invitations/accept")
     public SuccessResponse<WorkspaceMemberResponse> acceptInvitation(
-            @Valid @RequestBody AcceptWorkspaceInvitationRequest request,
-            Authentication authentication
+            @Valid @RequestBody AcceptWorkspaceInvitationRequest request
     ) {
-        UserEntity currentUser = currentUserResolver.resolve(authentication);
-        return SuccessResponse.of(workspaceInvitationService.acceptInvitation(request.token(), currentUser));
+        return SuccessResponse.of(workspaceInvitationService.acceptInvitation(request.token(), identity));
     }
 }

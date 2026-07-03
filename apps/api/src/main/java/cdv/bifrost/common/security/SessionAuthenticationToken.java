@@ -1,4 +1,4 @@
-package cdv.bifrost.security;
+package cdv.bifrost.common.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

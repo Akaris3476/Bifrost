@@ -1,4 +1,4 @@
-package cdv.bifrost.security;
+package cdv.bifrost.common.security;
 
 import cdv.bifrost.auth.constant.SessionConstant;
 import cdv.bifrost.auth.model.AuthSession;
