@@ -9,6 +9,7 @@ CREATE TABLE auth_sessions
     ip_address   VARCHAR(64),
     user_agent   VARCHAR(255),
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     expires_at   TIMESTAMPTZ NOT NULL,
     revoked_at   TIMESTAMPTZ

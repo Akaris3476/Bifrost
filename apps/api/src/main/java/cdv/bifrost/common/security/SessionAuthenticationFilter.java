@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -50,13 +51,14 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
                         user.getEmail(),
                         session.getSessionHash()
                 );
-                SecurityContextHolder.getContext().setAuthentication(
-                        new SessionAuthenticationToken(
-                                principal,
-                                null,
-                                List.of(new SimpleGrantedAuthority(ROLE_USER))
-                        )
-                );
+                SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+                ctx.setAuthentication(new SessionAuthenticationToken(
+                        principal,
+                        null,
+                        List.of(new SimpleGrantedAuthority(ROLE_USER))
+                ));
+                SecurityContextHolder.setContext(ctx);
+                SecurityContextHolder.setDeferredContext(() -> ctx);
             });
         });
 

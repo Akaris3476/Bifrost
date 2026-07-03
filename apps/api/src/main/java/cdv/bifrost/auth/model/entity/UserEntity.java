@@ -4,6 +4,7 @@ import cdv.bifrost.auth.model.enums.UserStatus;
 import cdv.bifrost.common.model.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 255)

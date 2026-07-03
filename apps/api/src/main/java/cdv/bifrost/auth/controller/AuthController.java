@@ -60,6 +60,8 @@ class AuthController {
 
     @GetMapping("/me")
     public SuccessResponse<AuthUserResponse> me() {
+        System.out.println("DEBUG-CTRL: in /me, identity.isAuthenticated = " + identity.isAuthenticated());
+        System.out.println("DEBUG-CTRL: in /me, security context = " + org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication());
         User user = authService.me(identity.getSessionHash());
         return SuccessResponse.of(AuthUserResponse.builder()
                 .id(java.util.UUID.fromString(user.getId()))

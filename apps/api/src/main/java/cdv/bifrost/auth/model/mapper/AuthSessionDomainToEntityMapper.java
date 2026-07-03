@@ -18,6 +18,6 @@ public interface AuthSessionDomainToEntityMapper {
     AuthSessionEntity map(AuthSession session);
 
     default OffsetDateTime map(LocalDateTime value) {
-        return value.atOffset(ZoneOffset.UTC);
+        return value == null ? null : value.atOffset(ZoneOffset.UTC);
     }
 }

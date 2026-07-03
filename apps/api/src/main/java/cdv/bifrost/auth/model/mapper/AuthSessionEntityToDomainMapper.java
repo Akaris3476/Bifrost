@@ -17,6 +17,6 @@ public interface AuthSessionEntityToDomainMapper {
     AuthSession map(AuthSessionEntity entity);
 
     default LocalDateTime map(OffsetDateTime value) {
-        return value.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
+        return value == null ? null : value.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
     }
 }
