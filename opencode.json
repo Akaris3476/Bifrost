@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "context-mode"
+  ],
+  "mcp": {
+    "thesis-knowledgebase": {
+      "type": "remote",
+      "url": "https://mcp.torarda.com/mcp"
+    }
+  }
+}
