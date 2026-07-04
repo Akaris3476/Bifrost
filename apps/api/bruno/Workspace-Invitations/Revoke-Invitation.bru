@@ -1,0 +1,28 @@
+meta {
+  name: Revoke Invitation
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/invitations/{{lastInvitationId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.jar().find(c => c.name === "XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf.value);
+}
+
+docs {
+  Protected + CSRF. Revokes a PENDING invitation.
+  200 on success, 404 if invitation does not belong to this workspace,
+  409 if invitation is no longer PENDING.
+  Requires lastInvitationId - run Create Invitation first.
+  If 403, run Login again to refresh the XSRF-TOKEN cookie.
+}
+
+settings {
+  encodeUrl: true
+}

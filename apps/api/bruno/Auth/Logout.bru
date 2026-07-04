@@ -1,0 +1,21 @@
+meta {
+  name: Logout
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/auth/logout
+  body: none
+  auth: none
+}
+
+docs {
+  Protected. Revokes the current session and clears BIFROST_SESSION cookie.
+  Must be called with a valid session cookie.
+  200 on success.
+}
+
+settings {
+  encodeUrl: true
+}

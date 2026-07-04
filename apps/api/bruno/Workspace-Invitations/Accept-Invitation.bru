@@ -1,0 +1,42 @@
+meta {
+  name: Accept Invitation
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/workspace-invitations/accept
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "token": "{{invitationToken}}"
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.jar().find(c => c.name === "XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf.value);
+}
+
+docs {
+  Protected + CSRF. The invited user accepts by sending the token from inviteUrl.
+  Authenticated user email must match the invited email.
+  Token must be PENDING and not expired (7d).
+  200 { data: WorkspaceMemberResponse }
+  401 if not authenticated, 403 if email mismatch,
+  404 if token not found, 409 if not pending, 410 if expired.
+  Requires invitationToken - run Create Invitation first, and be logged in
+  as the invited user (different session than the one that created the invite).
+  If 403, run Login again to refresh the XSRF-TOKEN cookie.
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Get Health
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/actuator/health
+  body: none
+  auth: none
+}
+
+docs {
+  Public endpoint. Returns Spring Boot Actuator health.
+  Expected: 200 { status: "UP" }
+}
+
+settings {
+  encodeUrl: true
+}

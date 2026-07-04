@@ -1,0 +1,23 @@
+meta {
+  name: List Invitations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/invitations
+  body: none
+  auth: none
+}
+
+docs {
+  Protected. Lists all invitations for a workspace, newest first.
+  Caller must be OWNER or ADMIN in the workspace.
+  200 { success: true, data: [ WorkspaceInvitationResponse, ... ] }
+  403 if caller lacks role, 404 if workspace not found.
+  GET is safe - no CSRF header required.
+}
+
+settings {
+  encodeUrl: true
+}

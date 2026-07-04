@@ -30,6 +30,11 @@ apps/api/.gitattributes
 apps/web/node_modules/
 apps/web/.next/
 apps/web/out/
+openspec
+.opencode
+.plan
+.qoder
+.pi
 
 # ─── Rust / Probe ────────────────────────────────────────────────────────────
 apps/probe/target/

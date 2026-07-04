@@ -1,0 +1,53 @@
+meta {
+  name: Create Invitation
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/invitations
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{testInvitationEmail}}",
+    "roleName": "{{testInvitationRole}}"
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.jar().find(c => c.name === "XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf.value);
+}
+
+script:post-response {
+  const data = res.getBody().data;
+  if (data) {
+    bru.setVar("lastInvitationId", data.id);
+    const url = new URL(data.inviteUrl);
+    bru.setVar("invitationToken", url.searchParams.get("token"));
+  }
+}
+
+docs {
+  Protected + CSRF. Invites a user by email with role ADMIN or MEMBER.
+  If a PENDING invitation already exists for that email in this workspace,
+  it is revoked and a new token is issued.
+  200 { data: { id, workspaceId, email, roleName, status, invitedByUserId,
+                expiresAt, acceptedAt, createdAt, inviteUrl } }
+  400 on bad roleName, 403 if caller is not OWNER/ADMIN,
+  409 if invitee is already a workspace member.
+  Sets lastInvitationId and invitationToken collection vars on success.
+  IMPORTANT: run Login first to populate the XSRF-TOKEN cookie.
+  If this returns 403, run Login again to refresh the cookie.
+}
+
+settings {
+  encodeUrl: true
+}

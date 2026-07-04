@@ -1,0 +1,31 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "displayName": "{{testUserDisplayName}}",
+    "email": "{{testUserEmail}}",
+    "password": "{{testUserPassword}}",
+    "passwordConfirmation": "{{testUserPassword}}"
+  }
+}
+
+docs {
+  Public. Password rules: 8-64 chars, must match confirmation.
+  Email is normalized to lowercase on the server.
+  200 { success: true, data: null }
+  400 on validation failure, 409 if email already exists.
+}
+
+settings {
+  encodeUrl: true
+}

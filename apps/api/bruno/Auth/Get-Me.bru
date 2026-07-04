@@ -1,0 +1,27 @@
+meta {
+  name: Get Me
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/auth/me
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const data = res.getBody().data;
+  if (data && data.id) bru.setVar("currentUserId", data.id);
+}
+
+docs {
+  Protected. Returns the authenticated user.
+  200 { success: true, data: { id, email, displayName, status } }
+  401 without a valid session.
+  Sets currentUserId collection var on success.
+}
+
+settings {
+  encodeUrl: true
+}
