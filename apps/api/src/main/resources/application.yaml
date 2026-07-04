@@ -10,6 +10,12 @@ spring:
           time_zone: UTC
   flyway:
     locations: classpath:db/migration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test@example.com
+    password: dummy
+    from-mail: no-reply@bifrost.com
 
 server:
   servlet:
@@ -18,3 +24,4 @@ server:
         http-only: true
         secure: true
         same-site: lax
+

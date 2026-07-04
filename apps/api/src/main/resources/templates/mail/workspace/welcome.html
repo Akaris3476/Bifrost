@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; background:#f4f6f8; padding:32px;">
+
+<div style="max-width:600px; margin:auto; background:white; border-radius:12px; overflow:hidden;">
+
+    <div th:replace="~{mail/layout :: header}"></div>
+
+    <div style="padding:32px;">
+        <h1 th:text="'Welcome, ' + ${name} + ' 👋'">Welcome</h1>
+
+        <p>Your account has been created successfully.</p>
+
+        <a th:href="${loginUrl}"
+           style="display:inline-block; padding:12px 20px; background:#2563eb; color:white; text-decoration:none; border-radius:8px;">
+            Go to Dashboard
+        </a>
+    </div>
+
+    <div th:replace="~{mail/layout :: footer}"></div>
+
+</div>
+
+</body>
+</html>
