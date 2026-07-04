@@ -1,0 +1,52 @@
+services:
+  database:
+    container_name: database
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: bifrost
+      POSTGRES_PASSWORD: bifrost
+      POSTGRES_DB: bifrost
+    volumes:
+      - ./docker/postgresql:/var/lib/postgresql/data/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - bifrost-network
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: application
+    restart: on-failure
+    ports:
+      - "127.0.0.1:9790:9790"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/bifrost
+      SPRING_DATASOURCE_USERNAME: bifrost
+      SPRING_DATASOURCE_PASSWORD: bifrost
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: "587"
+      SPRING_MAIL_USERNAME: test@example.com
+      SPRING_MAIL_PASSWORD: dummy
+      SPRING_MAIL_FROM_MAIL: no-reply@bifrost.com
+    networks:
+      - bifrost-network
+    depends_on:
+      - database
+
+# TODO: in the future, we will use redis as a cache
+#  cache:
+#    container_name: cache
+#    image: redis:8.4.2-alpine3.22
+#    restart: always
+#    volumes:
+#      - ./docker/redis:/data
+#    ports:
+#      - "127.0.0.1:6380:6379"
+#    networks:
+#      - bifrost-network
+
+networks:
+  bifrost-network:
+    driver: bridge
