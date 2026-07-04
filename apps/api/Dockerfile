@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM maven:3.9.14-amazoncorretto-17-al2023 AS build
+FROM maven:3.9.14-amazoncorretto-25 AS build
 
 # Copy Maven files for dependency resolution
 COPY pom.xml ./
@@ -12,7 +12,7 @@ COPY src src
 RUN mvn clean install -DskipTests
 
 # Stage 2: Run stage
-FROM amazoncorretto:17.0.18-al2023-headless
+FROM amazoncorretto:25-al2023-headless
 
 # Set working directory
 WORKDIR /app
@@ -20,8 +20,11 @@ WORKDIR /app
 # Copy the JAR file from the build stage
 COPY --from=build target/*.jar /app/bifrost-be.jar
 
-# Create non-root user for security
-RUN adduser --system --group appuser
+# Install shadow-utils for useradd, then create non-root user for security
+RUN dnf install -y shadow-utils && \
+    useradd --system --no-create-home --shell /sbin/nologin appuser && \
+    dnf remove -y shadow-utils && \
+    dnf clean all
 USER appuser
 
 # Expose port 9790

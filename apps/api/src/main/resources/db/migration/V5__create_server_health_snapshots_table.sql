@@ -11,9 +11,9 @@ CREATE TABLE server_health_snapshots
     disk_used_gb   NUMERIC(12, 3),
     disk_total_gb  NUMERIC(12, 3),
     uptime_seconds BIGINT,
-    load_1m        NUMERIC(8, 4),
-    load_5m        NUMERIC(8, 4),
-    load_15m       NUMERIC(8, 4),
+    load1m  NUMERIC(8, 4),
+    load5m  NUMERIC(8, 4),
+    load15m NUMERIC(8, 4),
     captured_at    TIMESTAMPTZ NOT NULL,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
