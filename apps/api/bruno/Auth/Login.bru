@@ -18,11 +18,10 @@ body:json {
 }
 
 script:post-response {
-  const jar = bru.cookies.jar();
-  const session = jar.find(c => c.name === "BIFROST_SESSION");
-  const xsrf = jar.find(c => c.name === "XSRF-TOKEN");
-  if (session) bru.setVar("authCookie", session.value);
-  if (xsrf) bru.setVar("xsrfToken", xsrf.value);
+  const session = bru.cookies.get("BIFROST_SESSION");
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (session) bru.setVar("authCookie", session);
+  if (xsrf) bru.setVar("xsrfToken", xsrf);
 }
 
 docs {

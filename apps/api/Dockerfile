@@ -28,7 +28,7 @@ RUN dnf install -y shadow-utils && \
 USER appuser
 
 # Expose port 9790
-EXPOSE 9790
+EXPOSE 8080
 
 # Set the entrypoint command for running the application
 ENTRYPOINT ["java", "-jar", "/app/bifrost-be.jar"]

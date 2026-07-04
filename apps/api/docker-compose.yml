@@ -20,7 +20,7 @@ services:
     container_name: application
     restart: on-failure
     ports:
-      - "127.0.0.1:9790:9790"
+      - "127.0.0.1:8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/bifrost
       SPRING_DATASOURCE_USERNAME: bifrost
