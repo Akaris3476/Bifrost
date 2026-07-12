@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
 use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, System};
 
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct ProcessMetrics{
     pub name: String,
     pub used_memory: u64,

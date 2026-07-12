@@ -1,8 +1,10 @@
 use sysinfo::{get_current_pid, Components, Disks, System};
 use super::{cpu::*, disk::*, components::*, memory::*, processes::*, };
 use std::time::{SystemTime};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct SysMetrics {
     pub timestamp: SystemTime,
     pub cpu: CpuMetrics,

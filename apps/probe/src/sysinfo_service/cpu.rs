@@ -1,7 +1,9 @@
+use serde::{Deserialize, Serialize};
 use sysinfo::{System};
 
 
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct CpuMetrics {
     pub cores_usage: Box<[f32]>,
     pub avg_usage: f32,

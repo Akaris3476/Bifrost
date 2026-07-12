@@ -1,11 +1,14 @@
+use serde::{Deserialize, Serialize};
 use sysinfo::{Components};
 
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct ComponentMetrics {
     pub label: String,
     pub temp: f32
 }
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct ComponentsMetrics {
     pub components: Box<[ComponentMetrics]>,
     pub avg_temp: f32,

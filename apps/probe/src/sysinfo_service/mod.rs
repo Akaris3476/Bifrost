@@ -5,7 +5,8 @@ mod memory;
 mod processes;
 mod components;
 
-pub use service::SysInfoService;
+pub(crate) use service::SysInfoService;
+pub(crate) use service::SysMetrics;
 
 
 // Possible TODOs:

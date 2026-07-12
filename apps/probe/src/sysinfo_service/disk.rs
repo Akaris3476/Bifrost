@@ -1,7 +1,9 @@
 use std::path::{PathBuf};
+use serde::{Deserialize, Serialize};
 use sysinfo::{Disks};
 
 #[derive(Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct DiskMetrics {
     pub name: String,
     pub total_space: u64,
