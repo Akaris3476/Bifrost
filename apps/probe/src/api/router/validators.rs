@@ -1,11 +1,11 @@
 use crate::api::router::handlers::RunCommandResponse;
 
-pub fn validate_install_args(args: &[String]) -> Result<(), RunCommandResponse> {
+pub fn validate_packages_args(args: &[String]) -> Result<(), RunCommandResponse> {
     
     if args.is_empty() {
         return Err(RunCommandResponse {
             stdout: String::new(),
-            stderr: "Validation error. No packages to install specified".to_owned(),
+            stderr: "Validation error. No packages specified".to_owned(),
             command_started: false,
             command_succeeded: false, 
             exit_code: None

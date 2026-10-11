@@ -8,7 +8,7 @@ use crate::api::router::get_router;
 use crate::api::shell_service::ShellService;
 use crate::sysinfo_service::SysMetrics;
 
-pub struct  AppState {
+pub struct   AppState {
     client: Client,
     remote_url: String,
     pub shell_service: ShellService,
@@ -27,7 +27,7 @@ impl ApiService {
                 .build()
                 .unwrap(),
             remote_url,
-            shell_service: ShellService {},
+            shell_service: ShellService::new(),
         };
         
         Self { state: Arc::new(state) }

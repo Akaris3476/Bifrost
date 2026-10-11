@@ -39,36 +39,43 @@ pub struct RunCommandResponse {
 
 pub async fn run_command(State(state): State<Arc<AppState>>, Json(req): Json<RunCommandRequest> ) -> Response {
     let shell_service = &state.shell_service;
-    let action = &req.action_type;
+    let action_type = &req.action_type;
     let args = &req.args;
     
-    let res: Result<Output, Error> = match action {
-        ShellCommands::Restart => {
-            println!("Restarting...");
-            Ok(Output {
-                status: ExitStatus::from_raw(0), // код 0 (успех)
-                stdout: Vec::new(),
-                stderr: Vec::new(),
-            })
-        },
-        ShellCommands::Install => {
-            
-            if let Err(err_res) = validators::validate_install_args(args) {
+    let res: Result<Output, Error> = match action_type {
+        // ShellCommands::Restart => {
+        //     println!("Restarting...");
+        //     Ok(Output {
+        //         status: ExitStatus::from_raw(0), 
+        //         stdout: Vec::new(),
+        //         stderr: Vec::new(),
+        //     })
+        // },
+        ShellCommands::PkgInstall => {
+            if let Err(err_res) = validators::validate_packages_args(args) {
                 return (StatusCode::BAD_REQUEST, Json(err_res)).into_response()
             }
             
             println!("Installing {:?}...", args);
             shell_service.install_package(args).await
         }
+        ShellCommands::PkgRemove => {
+            if let Err(err_res) = validators::validate_packages_args(args) {
+                return (StatusCode::BAD_REQUEST, Json(err_res)).into_response()
+            }
+            
+            println!("Removing {:?}...", args);
+            shell_service.remove_package(args).await
+        }
     };
     
     match res {
         Ok(output) => {
             let status_code = if output.status.success() {
-                println!("Command {:?} completed successfully", action);
+                println!("Command {:?} completed successfully", action_type);
                 StatusCode::OK
             } else {
-                println!("Command {:?} failed", action); 
+                println!("Command {:?} failed", action_type); 
                 StatusCode::INTERNAL_SERVER_ERROR
             };
             
@@ -88,7 +95,7 @@ pub async fn run_command(State(state): State<Arc<AppState>>, Json(req): Json<Run
             
         }
         Err(io_err) => {
-            println!("Command {:?} failed to start", action);
+            println!("Command {:?} failed to start", action_type);
             
             let res = RunCommandResponse { 
                 stdout: String::new(),
