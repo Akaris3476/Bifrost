@@ -7,6 +7,10 @@
     "thesis-knowledgebase": {
       "type": "remote",
       "url": "https://mcp.torarda.com/mcp"
+    },
+    "clickup": {
+      "type": "remote",
+      "url": "https://mcp.clickup.com/mcp"
     }
   }
 }

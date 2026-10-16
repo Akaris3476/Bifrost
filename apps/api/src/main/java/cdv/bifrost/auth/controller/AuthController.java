@@ -61,6 +61,7 @@ class AuthController {
     @GetMapping("/me")
     public SuccessResponse<AuthUserResponse> me() {
         User user = authService.me(identity.getSessionHash());
+        // todo: implement user roles, team, and users
         return SuccessResponse.of(AuthUserResponse.builder()
                 .id(java.util.UUID.fromString(user.getId()))
                 .email(user.getEmail())

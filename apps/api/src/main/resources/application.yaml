@@ -10,12 +10,14 @@ spring:
           time_zone: UTC
   flyway:
     locations: classpath:db/migration
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: test@example.com
-    password: dummy
-    from-mail: no-reply@bifrost.com
+
+resend:
+  # Replace re_xxxxxxxxx with a real key, or set RESEND_API_KEY env var.
+  # In dev, the placeholder is fine; in prod, env var is required.
+  api-key: ${RESEND_API_KEY:re_xxxxxxxxx}
+  # onboarding@resend.dev is Resend's sandbox domain and only delivers
+  # to verified recipients. In prod, set RESEND_FROM to a verified domain.
+  from: ${RESEND_FROM:onboarding@resend.dev}
 
 server:
   servlet:

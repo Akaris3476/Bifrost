@@ -37,6 +37,8 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExist(request.getEmail());
         }
 
+        // TODO: check invitation code to assign user to a team.
+
         User user = User.builder()
                 .email(request.getEmail().toLowerCase())
                 .name(request.getDisplayName())

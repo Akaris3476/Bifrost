@@ -14,6 +14,8 @@ public class RegisterRequest {
     @NotBlank
     private String displayName;
 
+    private String invitationCode;
+
     @Email
     @NotBlank
     private String email;
