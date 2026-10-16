@@ -1,5 +1,8 @@
-mod service;
-mod shell_service;
-pub(crate) mod router;
+mod api_service;
+mod handlers;
 
-pub(crate) use service::ApiService;
+mod ws_client;
+mod validators;
+pub mod contracts;
+
+pub(crate) use api_service::ApiService;
