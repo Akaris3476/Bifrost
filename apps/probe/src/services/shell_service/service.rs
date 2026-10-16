@@ -19,7 +19,7 @@ impl ShellService {
         let _guard = self.apt_lock.lock().await;
         
         let output_res = Command::new("apt-get")
-            // .env("DEBIAN_FRONTEND", "noninteractive")
+            .env("DEBIAN_FRONTEND", "noninteractive")
             .args(["install", "-y"])
             .args(packages_name)
             .output()
@@ -32,7 +32,7 @@ impl ShellService {
         let _guard = self.apt_lock.lock().await;
 
         let output_res = Command::new("apt-get")
-            // .env("DEBIAN_FRONTEND", "noninteractive")
+            .env("DEBIAN_FRONTEND", "noninteractive")
             .args(["remove", "-y"])
             .args(packages_name)
             .output()
