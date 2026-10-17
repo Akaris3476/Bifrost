@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 use sysinfo::{get_current_pid, Components, Disks, System};
 use super::{cpu::*, disk::*, components::*, memory::*, processes::*, };
 use std::time::{SystemTime};
@@ -14,7 +15,11 @@ pub struct SysMetrics {
     pub components: ComponentsMetrics
 }
 
-pub struct SysInfoService {
+pub struct SysInfoService{
+    inner: Mutex<SysInfoInner>
+}
+
+pub struct SysInfoInner {
     sys: System,
     disks: Disks,
     components: Components
@@ -26,17 +31,27 @@ impl SysInfoService {
         let sys = System::new_all();
         let disks = Disks::new_with_refreshed_list();
         let components = Components::new_with_refreshed_list();
-        SysInfoService { sys, disks, components }
+        
+        SysInfoService { 
+            inner: Mutex::new(SysInfoInner{
+                sys, disks, components
+            })
+        }
     }
     
     pub fn get_all_metrics(&mut self) -> SysMetrics {
+        let mut inner = self.inner.lock().unwrap();
+        
         let now = SystemTime::now();
         
-        let cpu_metrics = self.get_cpu_metrics();
-        let memory_metrics = self.get_memory_metrics();
-        let probe_metrics = self.get_probe_metrics();
-        let disc_metrics = self.get_disks_metrics();
-        let components_metrics = self.get_components_metrics();
+        let cpu_metrics = collect_cpu_metrics(&mut inner.sys);
+        let memory_metrics = collect_memory_metrics(&mut inner.sys);
+        let probe_metrics = {
+            let probe_pid = get_current_pid().unwrap();
+            collect_process_metrics(&mut inner.sys, probe_pid)
+        };
+        let disc_metrics = collect_disks_metrics(&mut inner.disks);
+        let components_metrics = collect_components_metrics(&mut inner.components);
         
         SysMetrics {
             timestamp: now,
@@ -50,24 +65,29 @@ impl SysInfoService {
     }
     
     pub fn get_cpu_metrics(&mut self) -> CpuMetrics {
-        collect_cpu_metrics(&mut self.sys)
+        let mut inner = self.inner.lock().unwrap();
+        collect_cpu_metrics(&mut inner.sys)
     }
     
     pub fn get_memory_metrics(&mut self) -> MemoryMetrics {
-        collect_memory_metrics(&mut self.sys)
+        let mut inner = self.inner.lock().unwrap();
+        collect_memory_metrics(&mut inner.sys)
     }
     
     pub fn get_disks_metrics(&mut self) -> Box<[DiskMetrics]> {
-        collect_disks_metrics(&mut self.disks)
+        let mut inner = self.inner.lock().unwrap();
+        collect_disks_metrics(&mut inner.disks)
     }
     
     pub fn get_components_metrics(&mut self) -> ComponentsMetrics {
-        collect_components_metrics(&mut self.components)
+        let mut inner = self.inner.lock().unwrap();
+        collect_components_metrics(&mut inner.components)
     }
     
     pub  fn get_probe_metrics(&mut self) -> ProcessMetrics {
+        let mut inner = self.inner.lock().unwrap();
         let probe_pid = get_current_pid().unwrap();
-        collect_process_metrics(&mut self.sys, probe_pid)
+        collect_process_metrics(&mut inner.sys, probe_pid)
     } 
 
     
