@@ -1,9 +1,9 @@
 use std::sync::Arc;
 use ezsockets::Client;
-use crate::api::ws_client::ws_client_actor::WsClientActor;
-use crate::api::ws_client::ws_connect_to::ws_connect_to;
+use crate::api::ws_client::actor::WsClientActor;
+use crate::api::ws_client::connect_to::ws_connect_to;
 use crate::services::shell_service::ShellService;
-use crate::services::sysinfo_service::{SysInfoService, SysMetrics};
+use crate::services::sysinfo_service::{SysInfoService};
 
 pub struct   AppState {
     pub shell_service: ShellService,

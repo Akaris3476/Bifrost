@@ -1,2 +1,2 @@
-pub mod ws_client_actor;
-pub mod ws_connect_to;
+pub mod actor;
+pub mod connect_to;
