@@ -86,7 +86,10 @@ impl ezsockets::ClientExt for WsClientActor {
         println!("ws client disconnected");
         
         if let Some(handle) = self.handle.take() {
+            println!("Aborting metrics task");
             handle.abort();
+            let _ = handle.await;
+            println!("Metrics task stopped");
         }
         
         Ok(ClientCloseMode::Reconnect)
@@ -123,13 +126,13 @@ impl WsClientActor {
             println!("Metrics sending task spawned");
 
             loop {
-
-
                 WsClientActor::send_metrics(&app_state, &tx);
+                
+                println!("Metrics sent");
+                
                 tokio::time::sleep(Duration::from_secs(10)).await;
             }
-
-            println!("Metrics sending task finished");
+        
         });
         
         handle
