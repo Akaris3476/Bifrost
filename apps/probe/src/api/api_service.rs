@@ -1,6 +1,7 @@
 use std::sync::{Arc};
 use std::time::Duration;
 use crate::api::ws_client::connect_to::ws_connect_to;
+use crate::api::WsTimeSettings;
 use crate::services::shell_service::ShellService;
 use crate::services::sysinfo_service::{SysInfoService};
 
@@ -45,8 +46,8 @@ impl ApiService {
         Self { state: Arc::new(state), api_key, remote_url}
     }
     
-    pub async fn connect_to_server (&mut self, reconnect_interval: Duration)  {
-        let _tx_to_ws = ws_connect_to(&self.remote_url, &self.api_key, reconnect_interval, self.state.clone() ).await;
+    pub async fn connect_to_server (&mut self, ws_settings: WsTimeSettings)  {
+        let _tx_to_ws = ws_connect_to(&self.remote_url, &self.api_key, ws_settings, self.state.clone() ).await;
         // self.state.set_tx_to_ws(tx_to_ws);
     }
 

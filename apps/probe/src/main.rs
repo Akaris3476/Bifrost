@@ -3,7 +3,7 @@ pub mod services;
 
 use std::{thread::sleep, time::Duration};
 use services::sysinfo_service::SysInfoService;
-use crate::api::ApiService;
+use crate::api::{ApiService, WsTimeSettings};
 
 #[tokio::main]
 async fn main() {
@@ -14,8 +14,13 @@ async fn main() {
                          String::from("api_key_placeholder")
                         );
     
+    let ws_settings = WsTimeSettings {
+        reconnect_interval: Duration::from_secs(3),
+        heartbeat_interval: Duration::from_secs(5),
+        timeout: Duration::from_secs(10),
+    };
     
-    api_service.connect_to_server(Duration::from_secs(5)).await;
+    api_service.connect_to_server(ws_settings).await;
     
     // api::handlers::run_command(ShellCommands::Install).await;
     
