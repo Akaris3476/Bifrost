@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = BifrostMapperConfig.class)
 public interface WorkspaceToWorkspaceEntityMapper {
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdByUser", ignore = true)

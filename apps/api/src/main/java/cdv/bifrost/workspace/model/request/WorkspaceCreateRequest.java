@@ -1,6 +1,7 @@
 package cdv.bifrost.workspace.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,7 @@ public class WorkspaceCreateRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
+    @NotEmpty
     private Map<String, String> members;
 
 }

@@ -21,8 +21,8 @@ body:json {
 }
 
 script:pre-request {
-  const xsrf = bru.cookies.jar().find(c => c.name === "XSRF-TOKEN");
-  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf.value);
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
 }
 
 docs {

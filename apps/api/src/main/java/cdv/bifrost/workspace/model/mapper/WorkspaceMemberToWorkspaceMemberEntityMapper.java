@@ -12,5 +12,9 @@ public interface WorkspaceMemberToWorkspaceMemberEntityMapper {
     @Mapping(target = "id.workspaceId", source = "workspace.id")
     @Mapping(target = "id.userId", source = "user.id")
     WorkspaceMemberEntity map(WorkspaceMember entity);
+
+    default java.util.UUID map(String id) {
+        return id == null ? null : java.util.UUID.fromString(id);
+    }
 }
 

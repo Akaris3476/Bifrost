@@ -2,10 +2,11 @@ package cdv.bifrost.auth.model.mapper;
 
 import cdv.bifrost.auth.model.User;
 import cdv.bifrost.auth.model.entity.UserEntity;
+import cdv.bifrost.common.model.mapper.BifrostMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = BifrostMapperConfig.class)
 public interface UserDomainToEntityMapper {
 
     @Mapping(target = "displayName", source = "name")

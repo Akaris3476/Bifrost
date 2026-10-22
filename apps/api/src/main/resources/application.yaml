@@ -11,6 +11,10 @@ spring:
   flyway:
     locations: classpath:db/migration
 
+logging:
+  level:
+    cdv.bifrost.common.security.SessionAuthenticationFilter: DEBUG
+
 resend:
   # Replace re_xxxxxxxxx with a real key, or set RESEND_API_KEY env var.
   # In dev, the placeholder is fine; in prod, env var is required.

@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -38,8 +37,8 @@ public class SecurityConfig {
     ) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/auth/login", "/auth/register", "/auth/logout")
+                        .spa()
+                        .ignoringRequestMatchers("/auth/login", "/auth/register", "/auth/logout", "/csrf")
                 )
                 .cors(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -56,7 +55,8 @@ public class SecurityConfig {
                                 "/auth/login",
                                 "/auth/register",
                                 "/actuator/health",
-                                "/actuator/info"
+                                "/actuator/info",
+                                "/csrf"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

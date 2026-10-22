@@ -19,17 +19,14 @@ body:json {
 
 script:post-response {
   const session = bru.cookies.get("BIFROST_SESSION");
-  const xsrf = bru.cookies.get("XSRF-TOKEN");
   if (session) bru.setVar("authCookie", session);
-  if (xsrf) bru.setVar("xsrfToken", xsrf);
 }
 
 docs {
-  Public. Sets BIFROST_SESSION cookie (HttpOnly, Secure, SameSite=Lax, 7d)
-  and XSRF-TOKEN cookie. Both are stored in the environment cookie jar
-  and auto-sent on subsequent requests.
+  Public. Sets the BIFROST_SESSION cookie (HttpOnly, Secure, SameSite=Lax, 7d).
+  The cookie is stored in the environment cookie jar and auto-sent on subsequent requests.
   200 on success, 401 on bad credentials, 403 if user is not ACTIVE.
-  Run this BEFORE any protected request in the same collection run.
+  Run this before protected requests. Run Get CSRF Token before protected mutations.
 }
 
 settings {

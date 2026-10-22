@@ -19,4 +19,6 @@ public interface WorkspaceInvitationRepository extends JpaRepository<WorkspaceIn
     );
 
     List<WorkspaceInvitationEntity> findByWorkspace_IdOrderByCreatedAtDesc(UUID workspaceId);
+
+    List<WorkspaceInvitationEntity> findByEmailIgnoreCaseAndStatus(String email, WorkspaceInvitationStatus status);
 }

@@ -18,7 +18,7 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
 
     List<WorkspaceMemberEntity> findByWorkspace_Id(UUID workspaceId);
 
-    @EntityGraph(attributePaths = {"workspace", "workspace-package"})
+    @EntityGraph(attributePaths = {"workspace"})
     List<WorkspaceMemberEntity> findByUser_Id(UUID userId);
 
     UUID user(UserEntity user);

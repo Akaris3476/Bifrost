@@ -2,6 +2,7 @@ package cdv.bifrost.workspace.controller;
 
 import cdv.bifrost.common.model.response.SuccessResponse;
 import cdv.bifrost.common.security.Identity;
+import cdv.bifrost.workspace.model.WorkspaceInvitation;
 import cdv.bifrost.workspace.model.request.AcceptWorkspaceInvitationRequest;
 import cdv.bifrost.workspace.model.request.CreateWorkspaceInvitationRequest;
 import cdv.bifrost.workspace.model.response.WorkspaceInvitationResponse;
@@ -21,6 +22,11 @@ public class WorkspaceInvitationController {
 
     private final WorkspaceInvitationService workspaceInvitationService;
     private final Identity identity;
+
+    @GetMapping("/invitations")
+    public SuccessResponse<List<WorkspaceInvitation>> getMyInvitations() {
+        return SuccessResponse.of(workspaceInvitationService.listMyInvitations(identity));
+    }
 
     @PostMapping("/workspaces/{workspaceId}/invitations")
     public SuccessResponse<WorkspaceInvitationResponse> createInvitation(

@@ -73,14 +73,12 @@ CREATE TABLE workspaces
     id                 UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
     name               VARCHAR(100) NOT NULL,
     slug               VARCHAR(100),
-    package_id         UUID         NOT NULL REFERENCES packages (id),
     created_by_user_id UUID         REFERENCES users (id) ON DELETE SET NULL,
     created_at         TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at         TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 CREATE UNIQUE INDEX uq_workspaces_slug ON workspaces (slug) WHERE slug IS NOT NULL;
-CREATE INDEX idx_workspaces_package_id ON workspaces (package_id);
 CREATE INDEX idx_workspaces_created_by_user_id ON workspaces (created_by_user_id);
 
 CREATE TABLE workspace_members

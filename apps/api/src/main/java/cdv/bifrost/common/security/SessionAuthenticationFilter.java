@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class SessionAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String ROLE_USER = "ROLE_USER";
@@ -40,27 +42,35 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        extractSessionCookie(request).ifPresent(rawSessionId -> {
-            AuthSession session = sessionService.findActiveByRawId(rawSessionId);
+        Optional<String> rawSessionId = extractSessionCookie(request);
+        if (rawSessionId.isEmpty()) {
+            log.debug("No BIFROST_SESSION cookie on {} {}", request.getMethod(), request.getRequestURI());
+        } else {
+            AuthSession session = sessionService.findActiveByRawId(rawSessionId.get());
             if (session == null) {
-                return;
+                log.debug("BIFROST_SESSION did not resolve to an active session on {} {}",
+                        request.getMethod(), request.getRequestURI());
+            } else {
+                userReadPort.findById(session.getUserId()).ifPresentOrElse(user -> {
+                    AuthUserPrincipal principal = new AuthUserPrincipal(
+                            user.getId(),
+                            user.getEmail(),
+                            rawSessionId.get()
+                    );
+                    SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+                    ctx.setAuthentication(new SessionAuthenticationToken(
+                            principal,
+                            null,
+                            List.of(new SimpleGrantedAuthority(ROLE_USER))
+                    ));
+                    SecurityContextHolder.setContext(ctx);
+                    SecurityContextHolder.setDeferredContext(() -> ctx);
+                    log.debug("Authenticated user {} for {} {}",
+                            user.getId(), request.getMethod(), request.getRequestURI());
+                }, () -> log.debug("Active BIFROST_SESSION references a missing user on {} {}",
+                        request.getMethod(), request.getRequestURI()));
             }
-            userReadPort.findById(session.getUserId()).ifPresent(user -> {
-                AuthUserPrincipal principal = new AuthUserPrincipal(
-                        user.getId(),
-                        user.getEmail(),
-                        rawSessionId
-                );
-                SecurityContext ctx = SecurityContextHolder.createEmptyContext();
-                ctx.setAuthentication(new SessionAuthenticationToken(
-                        principal,
-                        null,
-                        List.of(new SimpleGrantedAuthority(ROLE_USER))
-                ));
-                SecurityContextHolder.setContext(ctx);
-                SecurityContextHolder.setDeferredContext(() -> ctx);
-            });
-        });
+        }
 
         filterChain.doFilter(request, response);
     }

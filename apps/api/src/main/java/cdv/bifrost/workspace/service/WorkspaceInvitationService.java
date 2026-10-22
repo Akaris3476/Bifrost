@@ -5,11 +5,13 @@ import cdv.bifrost.auth.repository.UserRepository;
 import cdv.bifrost.authorization.model.entity.RoleEntity;
 import cdv.bifrost.authorization.repository.RoleRepository;
 import cdv.bifrost.common.security.Identity;
+import cdv.bifrost.workspace.model.WorkspaceInvitation;
 import cdv.bifrost.workspace.model.entity.WorkspaceEntity;
 import cdv.bifrost.workspace.model.entity.WorkspaceInvitationEntity;
 import cdv.bifrost.workspace.model.entity.WorkspaceMemberEntity;
 import cdv.bifrost.workspace.model.entity.WorkspaceMemberId;
 import cdv.bifrost.workspace.model.enums.WorkspaceInvitationStatus;
+import cdv.bifrost.workspace.model.mapper.WorkspaceInvitationEntityToWorkspaceInvitationMapper;
 import cdv.bifrost.workspace.model.request.CreateWorkspaceInvitationRequest;
 import cdv.bifrost.workspace.model.response.WorkspaceInvitationResponse;
 import cdv.bifrost.workspace.model.response.WorkspaceMemberResponse;
@@ -46,6 +48,7 @@ public class WorkspaceInvitationService {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final Clock clock = Clock.systemUTC();
+    private final WorkspaceInvitationEntityToWorkspaceInvitationMapper workspaceInvitationEntityToWorkspaceInvitationMapper;
 
     @Value("${bifrost.web.invitation-base-url:http://localhost:3000/workspace-invitations/accept}")
     private String invitationBaseUrl;
@@ -224,5 +227,14 @@ public class WorkspaceInvitationService {
 
     private OffsetDateTime now() {
         return OffsetDateTime.now(clock);
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkspaceInvitation> listMyInvitations(Identity identity) {
+        return workspaceInvitationRepository
+                .findByEmailIgnoreCaseAndStatus(identity.getEmail(), WorkspaceInvitationStatus.PENDING)
+                .stream()
+                .map(workspaceInvitationEntityToWorkspaceInvitationMapper::map)
+                .toList();
     }
 }

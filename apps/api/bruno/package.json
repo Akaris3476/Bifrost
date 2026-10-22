@@ -7,6 +7,7 @@
     "test": "bru run --env Local",
     "test:health": "bru run Health --env Local",
     "test:auth": "bru run Auth --env Local",
+    "test:workspaces": "bru run Workspaces --env Local",
     "test:invitations": "bru run Workspace-Invitations --env Local"
   },
   "devDependencies": {

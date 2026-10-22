@@ -31,7 +31,7 @@ public class WorkspaceManagementController {
     }
 
     @PostMapping("/workspaces")
-    public SuccessResponse<Workspace> createWorkspace(@Valid WorkspaceCreateRequest request) {
+    public SuccessResponse<Workspace> createWorkspace(@Valid @RequestBody WorkspaceCreateRequest request) {
         return SuccessResponse.of(workspaceManagementService.createWorkspace(request, identity));
     }
 
@@ -61,7 +61,7 @@ public class WorkspaceManagementController {
     @PatchMapping("/workspaces/{workspaceId}/users/{memberId}")
     public SuccessResponse<Void> updateWorkspaceMember(@PathVariable UUID workspaceId,
                                                        @PathVariable UUID memberId,
-                                                       @Valid WorkspaceMemberUpdateRequest request
+                                                       @Valid @RequestBody WorkspaceMemberUpdateRequest request
     ) {
         workspaceManagementService.updateWorkspaceMember(workspaceId, memberId, request);
         return SuccessResponse.ok();

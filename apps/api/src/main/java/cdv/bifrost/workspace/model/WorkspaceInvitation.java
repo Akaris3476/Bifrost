@@ -6,11 +6,13 @@ import cdv.bifrost.common.model.BaseDomainModel;
 import cdv.bifrost.workspace.model.enums.WorkspaceInvitationStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class WorkspaceInvitation extends BaseDomainModel {
