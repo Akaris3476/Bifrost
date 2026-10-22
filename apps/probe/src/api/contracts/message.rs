@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::api::contracts::shell::{RunShCommandRequest, RunShCommandResponse};
+use crate::services::sysinfo_service::SysMetrics;
 
 #[derive(Deserialize)]
 pub struct IncomingMessage {
@@ -27,7 +28,8 @@ pub struct  OutgoingMessage {
 #[derive(Serialize)]
 #[serde(tag = "command", content = "payload", rename_all = "snake_case")]
 pub enum OutgoingResponse {
-    ShellExecuteResponse(RunShCommandResponse),
+    ShellExecute(RunShCommandResponse),
+    Metrics(SysMetrics)
 }
 
 

@@ -6,7 +6,7 @@ use ezsockets::client::ClientCloseMode;
 use tokio::task::JoinHandle;
 use crate::api::handlers::run_sh_command::run_command;
 use crate::api::api_service::AppState;
-use crate::api::contracts::message::{IncomingCommand, IncomingMessage};
+use crate::api::contracts::message::{IncomingCommand, IncomingMessage, OutgoingMessage, OutgoingResponse};
 use crate::services::sysinfo_service::SysMetrics;
 
 pub(crate) struct WsClientActor {
@@ -45,6 +45,8 @@ impl ezsockets::ClientExt for WsClientActor {
             }
             Err(e) => {
                 eprintln!("Error parsing JSON: {:?}", e);
+                let _ = self.tx_to_ws.text("Error parsing incoming message")
+                    .inspect_err(|_| println!("Failed to inform server of incoming message parsing error"));
             }
             
         }
@@ -97,25 +99,30 @@ impl ezsockets::ClientExt for WsClientActor {
 }
 
 impl WsClientActor {
-    async fn incoming_msg_handler(&mut self, msg: IncomingMessage) -> String {
+    async fn incoming_msg_handler(&mut self, incoming_msg: IncomingMessage) -> String {
 
-        let res = match msg.command {
+        let res: OutgoingResponse = match incoming_msg.command {
 
             IncomingCommand::ShellExecute(run_sh_cmd_req) => {
                 let res = run_command(self.app_state.clone(), run_sh_cmd_req).await;
                 
-                res
+                OutgoingResponse::ShellExecute(res)
             }
 
         };
         
-        let serialized_res = serde_json::to_string(&res)
-            .unwrap_or("Error parsing response to JSON".to_string());
+        
+        let outgoing_msg = OutgoingMessage {
+            message_id: incoming_msg.message_id,
+            message: res
+        };
         
         
-        // todo: wrap response into outgoing message
-
-        serialized_res
+        let serialized_msg = serde_json::to_string(&outgoing_msg)
+            .unwrap_or_else(|_| "Error parsing response to JSON".to_string());
+        
+        
+        serialized_msg
     }
     
     fn spawn_metrics_task(&self) -> JoinHandle<()> {
@@ -141,12 +148,17 @@ impl WsClientActor {
     
     fn try_to_resend_failed_responses(&mut self) {
         if !self.res_failed_to_send.is_empty() {
-            println!("Sending responses that failed to send earlier");
+            let res_count = self.res_failed_to_send.len();
+            
+            println!("Sending responses that failed to send earlier: {}", res_count);
 
 
             self.res_failed_to_send.retain(|msg| {
-                match self.tx_to_ws.text(msg.clone()) {
-                    Ok(_) => false,
+                match self.tx_to_ws.text(msg) {
+                    Ok(_) => {
+                        println!("Successfully re-sent message to websocket");
+                        false
+                    },
                     Err(_) => true
                 }
             });
@@ -156,10 +168,14 @@ impl WsClientActor {
     fn send_metrics(app_state: &Arc<AppState>, tx_to_ws: &Client<Self>) {
         let metrics: SysMetrics = app_state.sysinfo_service.get_all_metrics();
         
-        let serialized = serde_json::to_string(&metrics).unwrap_or("Error serializing metrics".to_string());
+        let message_id = String::new();
+        let msg = OutgoingMessage {message_id, message: OutgoingResponse::Metrics(metrics)};
+        
+        let serialized = serde_json::to_string(&msg)
+            .unwrap_or_else(|_| "Error serializing metrics".to_string());
         
         if let Err(err) =tx_to_ws.text(serialized) {
-            eprintln!("error sending metrics: {err}");
+            eprintln!("Error sending metrics: {err}");
         }
     }
     
