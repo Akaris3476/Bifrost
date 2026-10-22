@@ -11,6 +11,10 @@
     "clickup": {
       "type": "remote",
       "url": "https://mcp.clickup.com/mcp"
+    },
+    "linear": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }

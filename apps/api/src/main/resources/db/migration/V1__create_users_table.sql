@@ -28,8 +28,7 @@ CREATE TABLE roles
 CREATE UNIQUE INDEX uq_roles_name ON roles (name);
 
 INSERT INTO roles (name, description)
-VALUES ('OWNER', 'Full workspace ownership permissions'),
-       ('ADMIN', 'Workspace administration permissions'),
+VALUES ('ADMIN', 'Full workspace ownership permissions'),
        ('MEMBER', 'Standard workspace member permissions');
 
 CREATE TABLE permissions

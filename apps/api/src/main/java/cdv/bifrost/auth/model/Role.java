@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class Role extends BaseDomainModel {
+    private String id;
     private String name;
     private String description;
 }
