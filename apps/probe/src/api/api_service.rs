@@ -2,6 +2,7 @@ use std::sync::{Arc};
 use std::time::Duration;
 use crate::api::ws_client::connect_to::ws_connect_to;
 use crate::api::WsTimeSettings;
+use crate::config::ProbeConfig;
 use crate::services::shell_service::ShellService;
 use crate::services::sysinfo_service::{SysInfoService};
 
@@ -26,15 +27,14 @@ pub struct   AppState {
 //     
 // }
 pub struct ApiService {
-    remote_url: String,
-    api_key: String,
+    config: ProbeConfig,
     
     state: Arc<AppState>,
 }
 
 impl ApiService {
     
-    pub fn new(remote_url: String, api_key: String) -> Self {
+    pub fn new(config: ProbeConfig) -> Self {
         
         let state = AppState {
             shell_service: ShellService::new(),
@@ -43,11 +43,11 @@ impl ApiService {
         };
         
         
-        Self { state: Arc::new(state), api_key, remote_url}
+        Self { state: Arc::new(state), config}
     }
     
     pub async fn connect_to_server (&mut self, ws_settings: WsTimeSettings)  {
-        let _tx_to_ws = ws_connect_to(&self.remote_url, &self.api_key, ws_settings, self.state.clone() ).await;
+        let _tx_to_ws = ws_connect_to(&self.config, &ws_settings, self.state.clone() ).await;
         // self.state.set_tx_to_ws(tx_to_ws);
     }
 

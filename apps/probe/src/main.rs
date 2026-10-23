@@ -1,18 +1,19 @@
 mod api;
 pub mod services;
+pub mod config;
 
 use std::{thread::sleep, time::Duration};
+use clap::Parser;
 use services::sysinfo_service::SysInfoService;
 use crate::api::{ApiService, WsTimeSettings};
+use crate::config::ProbeConfig;
 
 #[tokio::main]
 async fn main() {
-
+    let config = ProbeConfig::parse();
     
     let mut api_service = 
-        ApiService::new(String::from("localhost:3476"),
-                         String::from("api_key_placeholder")
-                        );
+        ApiService::new(config);
     
     let ws_settings = WsTimeSettings {
         reconnect_interval: Duration::from_secs(3),

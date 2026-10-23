@@ -3,7 +3,7 @@ use ezsockets::{Client, ClientConfig, SocketConfig};
 use std::sync::Arc;
 use std::time::Duration;
 use crate::api::ws_client::actor::WsClientActor;
-
+use crate::config::ProbeConfig;
 
 pub struct WsTimeSettings{
     pub(crate) reconnect_interval: Duration,
@@ -11,11 +11,11 @@ pub struct WsTimeSettings{
     pub(crate) timeout: Duration,
 }
 
-pub async fn ws_connect_to(remote_url: &str, api_key: &str,
-                           ws_settings: WsTimeSettings, app_state: Arc<AppState> ) -> Client<WsClientActor> {
-    println!("Connecting to server {}", remote_url);
+pub async fn ws_connect_to(config: &ProbeConfig,
+                           ws_settings: &WsTimeSettings, app_state: Arc<AppState> ) -> Client<WsClientActor> {
+    println!("Connecting to server {}", config.remote_url);
     
-    let connection_string: String = format!("ws://{}/ws", remote_url);
+    let connection_string: String = format!("ws://{}/ws", config.remote_url);
 
     let mut socket_config = SocketConfig::default();
     socket_config.heartbeat = ws_settings.heartbeat_interval;
@@ -23,7 +23,7 @@ pub async fn ws_connect_to(remote_url: &str, api_key: &str,
     
     let config = ClientConfig::new(connection_string.as_str())
         .reconnect_interval(ws_settings.reconnect_interval)
-        .header("X-API-Key", api_key)
+        .header("X-API-Key", config.api_key.clone())
         .socket_config(socket_config);
 
     let (tx_to_ws, future) = ezsockets::connect(
