@@ -101,12 +101,11 @@ These are populated by post-response scripts and consumed by other requests — 
 
 ## Workspace request binding
 
-Workspace management request DTOs are currently bound from query/form parameters (the controller methods do not declare
-`@RequestBody`). The Bruno requests use query parameters accordingly. `Create Workspace` uses Spring map binding with
-`members[<email>]=<role>`; add at least one existing user entry. The current implementation creates invitations for
-those
-members. Set `testWorkspaceId` to a real workspace UUID and `testMemberId` to a real member user UUID before using the
-related requests.
+Workspace creation, workspace updates, member additions, and member role updates use JSON request bodies, matching the
+controllers' `@RequestBody` parameters. `Create Workspace` sends `members` as a JSON object mapping email addresses to
+roles; add at least one existing user entry. The current implementation creates invitations for those members.
+Set `testWorkspaceId` to a real workspace UUID and `testMemberId` to a real member user UUID before using the related
+requests. DELETE requests identify their targets through URL path parameters and do not require a body.
 
 ## Typical run order
 

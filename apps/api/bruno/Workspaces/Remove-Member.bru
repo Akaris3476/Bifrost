@@ -1,0 +1,26 @@
+meta {
+  name: Remove Member
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/users/{{testMemberId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+docs {
+  Protected + CSRF. Removes a member from the workspace.
+  200 { success: true, data: null }
+  Requires testMemberId to be an existing member's user UUID.
+}
+
+settings {
+  encodeUrl: true
+}

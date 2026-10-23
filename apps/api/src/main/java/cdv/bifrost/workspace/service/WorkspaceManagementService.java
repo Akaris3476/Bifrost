@@ -69,13 +69,27 @@ public class WorkspaceManagementService {
 
     @Transactional
     public Workspace createWorkspace(WorkspaceCreateRequest request, Identity identity) {
+
+        workspaceRepository.findBySlug(slg.slugify(request.getName())).ifPresent(workspace -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Workspace with this name already exists");
+        });
+
         Workspace workspace = Workspace.builder()
                 .name(request.getName())
                 .slug(slg.slugify(request.getName()))
                 .build();
 
         WorkspaceEntity workspaceEntity = workspaceRepository.save(workspaceToWorkspaceEntityMapper.map(workspace));
-        WorkspaceEntity saved = workspaceRepository.save(workspaceEntity);
+
+        User auth = userRepository.findById(UUID.fromString(identity.getId())).map(userEntityToDomainMapper::map).orElseThrow(() -> new AccessDeniedException("Internal Error"));
+        WorkspaceMember admin = WorkspaceMember
+                .builder()
+                .workspace(workspaceEntityToWorkspaceMapper.map(workspaceEntity))
+                .role(roleRepository.findByName("ADMIN").map(roleEntityToRoleMapper::map).orElseThrow(() -> new RuntimeException("Internal Error")))
+                .user(auth)
+                .build();
+
+        workspaceMemberRepository.save(workspaceMemberToWorkspaceMemberEntityMapper.map(admin));
 
         // also could be used as -> var entry : request.getMembers().entrySet()
         for (Map.Entry<String, String> entry : request.getMembers().entrySet()) {
@@ -87,7 +101,7 @@ public class WorkspaceManagementService {
             if (userEntity.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
             }
-            boolean isMember = workspaceMemberRepository.existsByWorkspace_IdAndUser_Id(saved.getId(), userEntity.get().getId());
+            boolean isMember = workspaceMemberRepository.existsByWorkspace_IdAndUser_Id(workspaceEntity.getId(), userEntity.get().getId());
 
             if (isMember) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already a member of this workspace");
@@ -95,7 +109,7 @@ public class WorkspaceManagementService {
 
             workspaceInvitationRepository
                     .findByWorkspace_IdAndEmailIgnoreCaseAndStatus(
-                            saved.getId(),
+                            workspaceEntity.getId(),
                             entry.getKey(),
                             WorkspaceInvitationStatus.PENDING)
                     .ifPresent(invitation -> {
@@ -107,12 +121,13 @@ public class WorkspaceManagementService {
                     .tokenHash(UUID.randomUUID().toString())
                     .email(userEntity.get().getEmail())
                     .role(role)
+                    .workspace(workspaceEntityToWorkspaceMapper.map(workspaceEntity))
                     .build();
 
             WorkspaceInvitationEntity workspaceInvitationEntity = workspaceInvitationToWorkspaceInvitationEntityMapper.map(invitation);
             workspaceInvitationRepository.save(workspaceInvitationEntity);
         }
-        return workspaceEntityToWorkspaceMapper.map(saved);
+        return workspaceEntityToWorkspaceMapper.map(workspaceEntity);
     }
 
     @Transactional

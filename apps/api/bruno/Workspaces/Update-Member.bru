@@ -1,0 +1,36 @@
+meta {
+  name: Update Member
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/users/{{testMemberId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "role": "{{testMemberRole}}"
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+docs {
+  Protected + CSRF. Changes a member role using a JSON request body.
+  200 { success: true, data: null }
+  Requires testMemberId to be an existing member's user UUID.
+}
+
+settings {
+  encodeUrl: true
+}

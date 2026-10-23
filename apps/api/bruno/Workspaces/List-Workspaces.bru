@@ -1,0 +1,21 @@
+meta {
+  name: List Workspaces
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/workspaces
+  body: none
+  auth: none
+}
+
+docs {
+  Protected. Lists workspaces the authenticated user belongs to.
+  200 { success: true, data: [ Workspace, ... ] }
+  401 without a valid session.
+}
+
+settings {
+  encodeUrl: true
+}

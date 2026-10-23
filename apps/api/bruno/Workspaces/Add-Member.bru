@@ -1,0 +1,43 @@
+meta {
+  name: Add Member
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{testMemberEmail}}",
+    "role": "{{testMemberRole}}"
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+script:post-response {
+  const data = res.getBody().data;
+  if (data && data.user && data.user.id) bru.setVar("testMemberId", data.user.id);
+}
+
+docs {
+  Protected + CSRF. Adds an existing user to the workspace using a JSON request body.
+  200 { success: true, data: WorkspaceMember }
+  400 if the user or role does not exist; 409 if already a member.
+  Sets testMemberId from the returned user.
+}
+
+settings {
+  encodeUrl: true
+}

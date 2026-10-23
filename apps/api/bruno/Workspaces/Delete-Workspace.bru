@@ -1,0 +1,26 @@
+meta {
+  name: Delete Workspace
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+docs {
+  Protected + CSRF. Deletes a workspace by ID.
+  200 { success: true, data: null }
+  Destructive: use only with a disposable test workspace.
+}
+
+settings {
+  encodeUrl: true
+}

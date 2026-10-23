@@ -1,0 +1,21 @@
+meta {
+  name: List Members
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}/users
+  body: none
+  auth: none
+}
+
+docs {
+  Protected. Lists members of a workspace if the authenticated user is a member.
+  200 { success: true, data: [ WorkspaceMember, ... ] }
+  401 without a valid session; 403 if the caller is not a workspace member.
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Get CSRF Token
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/csrf
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) bru.setVar("xsrfToken", xsrf);
+}
+
+docs {
+  Public. Calls GET /csrf to initialize Spring's deferred CSRF token and receive the XSRF-TOKEN cookie.
+  Run after Login and before protected POST, PATCH, or DELETE requests.
+  The mutation requests copy this cookie into the X-XSRF-TOKEN header automatically.
+  200 with an empty response body; inspect the cookie jar for XSRF-TOKEN.
+}
+
+settings {
+  encodeUrl: true
+}

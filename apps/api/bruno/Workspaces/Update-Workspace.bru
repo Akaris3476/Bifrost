@@ -1,0 +1,36 @@
+meta {
+  name: Update Workspace
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/workspaces/{{testWorkspaceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "{{updatedWorkspaceName}}"
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+docs {
+  Protected + CSRF. Updates the workspace name using a JSON request body.
+  200 { success: true, data: Workspace }
+  Requires a real testWorkspaceId.
+}
+
+settings {
+  encodeUrl: true
+}

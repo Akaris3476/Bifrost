@@ -1,0 +1,42 @@
+meta {
+  name: Create Workspace
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/workspaces
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{testWorkspaceName}}",
+    "members": {
+      "{{testUserEmail}}": "ADMIN"
+    }
+  }
+}
+
+script:pre-request {
+  const xsrf = bru.cookies.get("XSRF-TOKEN");
+  if (xsrf) req.setHeader("X-XSRF-TOKEN", xsrf);
+}
+
+script:post-response {
+  const data = res.getBody().data;
+  if (data && data.id) bru.setVar("testWorkspaceId", data.id);
+}
+
+docs {
+  Protected + CSRF. Creates a workspace. The endpoint expects a JSON request body.
+  The example adds the current user as ADMIN.
+  200 { success: true, data: Workspace }
+  Sets testWorkspaceId from the returned workspace.
+  Requires the current user to exist. Run Login first.
+}
+
+settings {
+  encodeUrl: true
+}
